@@ -14,13 +14,12 @@ jobs:
 
       - name: Configure Git
         run: |
+          echo "GITHUB_ACTOR: $GITHUB_ACTOR"
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
       - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.0.0-rc.1
+        uses: helm/chart-releaser-action@v1.0.0-rc.2
         env:
           CR_TOKEN: "${{ secrets.CR_TOKEN }}"
-          CR_OWNER: nuriel77
-          CR_GIT_REPO: helm-repo
           CR_PACKAGE_PATH: sources
