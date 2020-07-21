@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+    paths:
+      - 'charts/**'
 
 jobs:
   release:
@@ -14,11 +16,10 @@ jobs:
 
       - name: Configure Git
         run: |
-          echo "GITHUB_ACTOR: $GITHUB_ACTOR"
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
       - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.0.0-rc.2
+        uses: helm/chart-releaser-action@master
         env:
-          CR_TOKEN: "${{ secrets.CR_TOKEN }}"
+          CR_TOKEN: '${{ secrets.CR_TOKEN }}'
