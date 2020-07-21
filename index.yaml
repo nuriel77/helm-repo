@@ -3,10 +3,10 @@ entries:
   nginx-ingress:
   - apiVersion: v1
     appVersion: v0.34.1
-    created: "2020-07-21T14:38:36.130838412Z"
+    created: "2020-07-21T14:49:11.147363055Z"
     description: An nginx Ingress controller that uses ConfigMap to store the nginx
       configuration.
-    digest: 3f4df1d9a6a0d5f5d7b26a16c40730888e7f0fbeff59139de59af11dcb6c883b
+    digest: 335432065c4d99a18c7deb6563bf4a52737c347af819d613a6c0b50c1b10764a
     home: https://github.com/kubernetes/ingress-nginx
     icon: https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Nginx_logo.svg/500px-Nginx_logo.svg.png
     keywords:
@@ -21,6 +21,6 @@ entries:
     sources:
     - https://github.com/kubernetes/ingress-nginx
     urls:
-    - https://github.com/nuriel77/helm-repo/releases/download/nginx-ingress-1.41.1/nginx-ingress-1.41.1.tgz
-    version: 1.41.1
-generated: "2020-07-21T14:38:36.024102652Z"
+    - https://github.com/nuriel77/helm-repo/releases/download/nginx-ingress-1.41.2/nginx-ingress-1.41.2.tgz
+    version: 1.41.2
+generated: "2020-07-21T14:49:10.727155521Z"
