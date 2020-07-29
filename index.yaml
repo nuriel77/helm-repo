@@ -1,26 +1,14 @@
 apiVersion: v1
 entries:
-  nginx-ingress:
-  - apiVersion: v1
-    appVersion: v0.34.1
-    created: "2020-07-21T14:50:58.833985272Z"
-    description: An nginx Ingress controller that uses ConfigMap to store the nginx
-      configuration.
-    digest: 82ab778a40a69e869db2ce72475d9d88b8895cd9b08aa376baaa0f525e181abe
-    home: https://github.com/kubernetes/ingress-nginx
-    icon: https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Nginx_logo.svg/500px-Nginx_logo.svg.png
-    keywords:
-    - ingress
-    - nginx
-    kubeVersion: '>=1.10.0-0'
-    maintainers:
-    - name: ChiefAlexander
-    - email: Trevor.G.Wood@gmail.com
-      name: taharah
-    name: nginx-ingress
-    sources:
-    - https://github.com/kubernetes/ingress-nginx
+  mytest:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2020-07-29T13:06:43.436239174Z"
+    description: A Helm chart for Kubernetes
+    digest: 7908b86d4e41223ce2bed01e454817a1b49c4d5a8a0d3812e32cd398f6f7af19
+    name: mytest
+    type: application
     urls:
-    - https://github.com/nuriel77/helm-repo/releases/download/nginx-ingress-1.41.3/nginx-ingress-1.41.3.tgz
-    version: 1.41.3
-generated: "2020-07-21T14:50:58.743685721Z"
+    - https://github.com/nuriel77/helm-repo/releases/download/mytest-0.1.0/mytest-0.1.0.tgz
+    version: 0.1.0
+generated: "2020-07-29T13:06:43.27606407Z"
