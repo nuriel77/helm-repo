@@ -6,8 +6,8 @@ metadata:
   labels:
     app: pulsar
 data:
-  zookeeperServers: "cm-pulsar-zookeeper:2181"
 {{ toYaml .Values.broker.configData | indent 2 }}
+  zookeeperServers: {{ .Values.broker.configData.zookeeperServers }}
 
 ---
 # deploy zookeeper only when `components.zookeeper` is true
@@ -18,5 +18,5 @@ metadata:
   labels:
     app: pulsar
 data:
-  PULSAR_PREFIX_serverCnxnFactory: org.apache.zookeeper.server.NettyServerCnxnFactory
 {{ toYaml .Values.zookeeper.configData | indent 2 }}
+  PULSAR_PREFIX_serverCnxnFactory: org.apache.zookeeper.server.NettyServerCnxnFactory

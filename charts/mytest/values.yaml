@@ -1,6 +1,7 @@
 broker:
   configData:
     managedLedgerDefaultWriteQuorum: "2"
+    zookeeperServers: "cm-pulsar-zookeeper-from-values-file:2181"
 
 zookeeper:
   configData:
