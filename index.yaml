@@ -3,6 +3,16 @@ entries:
   mytest:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2021-12-17T20:48:54.360342969Z"
+    description: A Helm chart for Kubernetes
+    digest: 4d1d111ba5aa1ceef0578814aa685cb661fb541ff5417eb66c13c8bca3dcc406
+    name: mytest
+    type: application
+    urls:
+    - https://github.com/nuriel77/helm-repo/releases/download/mytest-0.1.3/mytest-0.1.3.tgz
+    version: 0.1.3
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2020-07-29T13:43:29.140918674Z"
     description: A Helm chart for Kubernetes
     digest: b07ff32366fb064b42e900ee7664741010256e014c6597023a83a10744d53ce7
