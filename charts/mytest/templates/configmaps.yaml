@@ -69,6 +69,7 @@ data:
   managedLedgerDefaultAckQuorum: "2"
   managedLedgerDefaultEnsembleSize: "2"
   managedLedgerDefaultWriteQuorum: "2"
+{{ toYaml .Values.broker.configData | indent 2 }}
 
 ---
 # deploy zookeeper only when `components.zookeeper` is true
@@ -87,9 +88,4 @@ data:
   dataDir: /pulsar/data/zookeeper
   PULSAR_PREFIX_serverCnxnFactory: org.apache.zookeeper.server.NettyServerCnxnFactory
   serverCnxnFactory: org.apache.zookeeper.server.NettyServerCnxnFactory
-  # enable zookeeper tls
-  PULSAR_EXTRA_OPTS: -Dzookeeper.tcpKeepAlive=true -Dzookeeper.clientTcpKeepAlive=true -Dpulsar.log.root.level=info
-  PULSAR_GC: "-XX:+UseG1GC"
-  PULSAR_LOG_LEVEL: info
-  PULSAR_LOG_ROOT_LEVEL: info
-  PULSAR_MEM: "-Xms6g -Xmx12g -Dcom.sun.management.jmxremote -Djute.maxbuffer=10485760"
+{{ toYaml .Values.zookeeper.configData | indent 2 }}
