@@ -1,5 +1,7 @@
 broker:
-  configData: {}
+  configData:
+    managedLedgerDefaultWriteQuorum: "2"
 
 zookeeper:
-  configData: {}
+  configData:
+    dataDir: /pulsar/data/zookeeper

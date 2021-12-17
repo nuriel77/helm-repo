@@ -68,7 +68,6 @@ data:
   exposeConsumerLevelMetricsInPrometheus: "false"
   managedLedgerDefaultAckQuorum: "2"
   managedLedgerDefaultEnsembleSize: "2"
-  managedLedgerDefaultWriteQuorum: "2"
 {{ toYaml .Values.broker.configData | indent 2 }}
 
 ---
@@ -85,7 +84,6 @@ metadata:
     cluster: cm-pulsar
     component: zookeeper
 data:
-  dataDir: /pulsar/data/zookeeper
   PULSAR_PREFIX_serverCnxnFactory: org.apache.zookeeper.server.NettyServerCnxnFactory
   serverCnxnFactory: org.apache.zookeeper.server.NettyServerCnxnFactory
 {{ toYaml .Values.zookeeper.configData | indent 2 }}
