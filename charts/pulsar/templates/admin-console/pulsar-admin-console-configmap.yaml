@@ -1,0 +1,98 @@
+#
+#  Copyright 2021 DataStax, Inc.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+#
+
+{{- if .Values.extra.pulsarAdminConsole }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ template "pulsar.fullname" . }}-{{ .Values.pulsarAdminConsole.component }}"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "pulsar.name" . }}
+    chart: {{ template "pulsar.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    component: {{ .Values.pulsarAdminConsole.component }}
+    cluster: {{ template "pulsar.fullname" . }}
+data:
+  config-override.js: |
+    var globalConf = {
+        "template_directory_uri": "",
+        "ajax_url": "",
+        "rest_url": "",
+        "tenant": "{{ .Values.pulsarAdminConsole.defaultTenant }}",
+        "polling_interval": "10000",
+        "wss_url": "",
+        "disable_billing": "",
+        "home_cluster": "{{ template "pulsar.fullname" . }}",
+        "test": "",
+        "client_token": "",
+        "admin_token": "",
+        "login": "admin",
+        "email": "",
+        "client_role": "",
+        "plan": "",
+        "need_to_create_plan": "",
+        "plan_to_create": "",
+        "admin_role": "",
+        "cluster_list": ["{{ template "pulsar.fullname" . }}"],
+        "api_base_url": "{{ .Values.pulsarAdminConsole.apiBaseUrl }}",
+        "ca_certificate": "",
+        "api_version": "{{ .Values.pulsarAdminConsole.apiVersion }}",
+        "default_plan": "",
+        "notice_text": "",
+        {{- if index .Values "kube-prometheus-stack" "grafana" "ingress" "enabled"}}
+        "grafana_url": "https://{{ index .Values "kube-prometheus-stack" "grafana" "ingress" "hosts" 0 }}{{ index .Values "kube-prometheus-stack" "grafana" "ingress" "path" }}",
+        {{- else }}
+        "grafana_url": "http://localhost:3000",
+        {{- end }}
+        "user_role": "administrator",
+        "feature_flags": {
+            "function": true,
+            "sink": true,
+            "source": true,
+            "tenantStats": false
+        },
+        "security": "",
+        "chargebee_site": "",
+        "billing_provider": "",
+        "multi_user_org": "",
+        "private_org": "true",
+        "functions_disabled": "false",
+        {{- if .Values.extra.burnell }}
+        "clients_disabled": "false",
+        {{- else }}
+        "clients_disabled": "false",
+        {{- end }}
+        "running_env": "k8s",
+        "use_token_list": "false",
+        "auth_mode": "{{ .Values.pulsarAdminConsole.authMode }}",
+        "oauth_client_id": "{{ .Values.pulsarAdminConsole.oauthClientId }}",
+        "host_overrides": {
+            {{- if .Values.pulsarAdminConsole.codeSampleUrl.useDnsName }}
+            "pulsar": "pulsar+ssl://{{ .Values.dnsName }}:6651",
+            "ws": "wss://{{ .Values.dnsName }}:8001",
+            "http": "https://{{ .Values.dnsName }}:8085"
+            {{- else }}
+            "pulsar": "{{ .Values.pulsarAdminConsole.codeSampleUrl.pulsar }}",
+            "ws": "{{ .Values.pulsarAdminConsole.codeSampleUrl.websocket }}",
+            "http": "{{ .Values.pulsarAdminConsole.codeSampleUrl.http }}"
+            {{- end }}
+        }
+    }
+
+{{- end }}

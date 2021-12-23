@@ -1,0 +1,67 @@
+#
+#  Copyright 2021 DataStax, Inc.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+#
+
+{{- if .Values.extra.tardigrade }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-tardigrade-gateway
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}-tardigrade-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-tardigrade-gateway
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-tardigrade-gateway
+    spec:
+      volumes:
+      - name: config-props
+        configMap:
+          name: {{ .Release.Name }}-tardigrade
+      - name: config-emptydir
+        emptyDir: {}
+      initContainers:
+      - name: make-config-rw
+        image: busybox
+        command: [ "sh", "-c" ]
+        args: [ "echo 'Copy config' && cp /configmap/config.yaml /config" ]
+        volumeMounts:
+        - name: config-emptydir
+          mountPath:  /config
+        - name: config-props
+          mountPath: /configmap
+      containers:
+      - name: tardigrade-gateway
+        image: {{ .Values.image.tardigrade.repository }}:{{ .Values.image.tardigrade.tag }}
+        args: [ "run", "--config-dir", "/config" ]
+        volumeMounts:
+        - name: config-emptydir
+          mountPath:  /config
+        - name: config-props
+          mountPath: /configmap
+        env:
+        - name: CONF_PATH
+          value: "/config"
+        ports:
+        - containerPort: 7777
+          protocol: TCP
+{{- end }}

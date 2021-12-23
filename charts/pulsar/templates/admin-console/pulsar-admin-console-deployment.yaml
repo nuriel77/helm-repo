@@ -1,0 +1,155 @@
+#
+#  Copyright 2021 DataStax, Inc.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+#
+
+{{- if .Values.extra.pulsarAdminConsole }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ template "pulsar.fullname" . }}-{{ .Values.pulsarAdminConsole.component }}"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "pulsar.name" . }}
+    chart: {{ template "pulsar.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    component: {{ .Values.pulsarAdminConsole.component }}
+    cluster: {{ template "pulsar.fullname" . }}
+spec:
+  replicas: {{ .Values.pulsarAdminConsole.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app: {{ template "pulsar.name" . }}
+      release: {{ .Release.Name }}
+      component: {{ .Values.pulsarAdminConsole.component }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "pulsar.name" . }}
+        release: {{ .Release.Name }}
+        component: {{ .Values.pulsarAdminConsole.component }}
+        cluster: {{ template "pulsar.fullname" . }}
+      annotations:
+        checksum/dashboard: {{ include (print $.Template.BasePath "/admin-console/pulsar-admin-console-configmap.yaml") . | sha256sum }}
+        checksum/nginx: {{ include (print $.Template.BasePath "/admin-console/pulsar-admin-console-nginx-configmap.yaml") . | sha256sum }}
+        {{- if .Values.pulsarAdminConsole.annotations }}
+{{ toYaml .Values.pulsarAdminConsole.annotations | indent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: "{{ template "pulsar.fullname" . }}-burnell"
+    {{- if .Values.pulsarAdminConsole.tolerations }}
+      tolerations:
+{{ toYaml .Values.pulsarAdminConsole.tolerations | indent 8 }}
+    {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.pulsarAdminConsole.gracePeriod }}
+      containers:
+      - name: nginx
+        image: nginxinc/nginx-unprivileged:stable-alpine
+        imagePullPolicy: {{ .Values.image.pulsarAdminConsole.pullPolicy }}
+        ports:
+        - name: "nginx"
+          containerPort: 8080
+        {{- if .Values.enableTls }}
+        - name: "nginx-tls"
+          containerPort: 8443
+        {{- end }}
+        volumeMounts:
+        - mountPath: /etc/nginx
+          readOnly: true
+          name: nginxconf
+        {{- if .Values.enableTls }}
+        - mountPath: /certs
+          name: certs
+          readOnly: true
+        {{- end }}
+        livenessProbe:
+          httpGet:
+            path: /ruok
+            port: 8080
+          initialDelaySeconds: {{ .Values.pulsarAdminConsole.probe.liveness.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.pulsarAdminConsole.probe.liveness.timeoutSeconds }}
+        readinessProbe:
+          httpGet:
+            path: /ruok
+            port: 8080
+          initialDelaySeconds: {{ .Values.pulsarAdminConsole.probe.readiness.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.pulsarAdminConsole.probe.readiness.timeoutSeconds }}
+        resources:
+      - name: "{{ template "pulsar.fullname" . }}-pulsar-admin-console"
+        image: "{{ .Values.image.pulsarAdminConsole.repository }}:{{ .Values.image.pulsarAdminConsole.tag }}"
+        imagePullPolicy: {{ .Values.image.pulsarAdminConsole.pullPolicy }}
+        {{- if .Values.pulsarAdminConsole.resources }}
+        resources:
+{{ toYaml .Values.pulsarAdminConsole.resources | indent 10 }}
+        {{- end }}
+        ports:
+        - name: http
+          containerPort: 6454
+        - name: https
+          containerPort: 6455
+        volumeMounts:
+          - name: dashboardconfig
+            mountPath: /home/appuser/dashboard/dist/config-override.js
+            subPath: config-override.js
+          {{- if .Values.enableTls }}
+          - name: certs
+            readOnly: true
+            mountPath: /pulsar/certs
+          {{- end }}
+          {{- if .Values.enableTokenAuth }}
+          - mountPath: "/pulsar/token-superuser"
+            name: token-superuser
+            readOnly: true
+          {{- end }}
+        env:
+          {{- if .Values.enableTokenAuth }}
+          - name: token_path
+            value: "/pulsar/token-superuser/superuser.jwt"
+          {{- end }}
+          - name: auth_mode
+            value: {{ .Values.pulsarAdminConsole.authMode }}
+          - name: K8S_NAMESPACE
+            value: {{ .Release.Namespace }}
+          - name: LOG_LEVEL
+            value: {{ .Values.pulsarAdminConsole.serverLogLevel }}
+      volumes:
+        - name: dashboardconfig
+          configMap:
+            name: {{ template "pulsar.fullname" . }}-{{ .Values.pulsarAdminConsole.component }}
+            items:
+            - key: config-override.js
+              path: config-override.js
+        - name: nginxconf
+          configMap:
+            name: {{ template "pulsar.fullname" . }}-{{ .Values.pulsarAdminConsole.component }}-nginx
+            items:
+            - key: nginx.conf
+              path: nginx.conf
+        {{- if .Values.enableTls }}
+        - name: certs
+          secret:
+            secretName: "{{ .Values.tlsSecretName }}"
+        {{- end }}
+        {{- if .Values.enableTokenAuth }}
+        - name: token-superuser
+          secret:
+            secretName: token-superuser
+        {{- end }}
+{{- end }}
