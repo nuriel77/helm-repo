@@ -81,4 +81,32 @@ entries:
     urls:
     - https://github.com/nuriel77/helm-repo/releases/download/mytest-0.1.2/mytest-0.1.2.tgz
     version: 0.1.2
+  pulsar:
+  - apiVersion: v2
+    appVersion: 2.8.0
+    created: "2021-12-23T08:41:39.583923013Z"
+    dependencies:
+    - condition: kube-prometheus-stack.enabled
+      name: kube-prometheus-stack
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 12.x.x
+    - condition: cert-manager.enabled
+      name: cert-manager
+      repository: https://charts.jetstack.io
+      version: v1.1.x
+    - condition: keycloak.enabled
+      name: keycloak
+      repository: https://charts.bitnami.com/bitnami
+      version: 5.0.1
+    description: Apache Pulsar Helm chart for Kubernetes
+    digest: b108f92809ac73943427849eed74789d3da51ee9b536fdc02890f120e32a600e
+    maintainers:
+    - name: zzzming
+    - name: cdbartholomew
+    - name: lhotari
+    - name: michaeljmarshall
+    name: pulsar
+    urls:
+    - https://github.com/nuriel77/helm-repo/releases/download/pulsar-2.0.10/pulsar-2.0.10.tgz
+    version: 2.0.10
 generated: "2020-07-29T13:43:29.06273043Z"
